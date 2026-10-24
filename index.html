@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="ur">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<meta name="description" content="Scam Alert — Pakistan ke liye free scam check tool. Koi bhi number, website link ya message pehle check karo, phir bharosa karo." />
+<link rel="icon" href="data:," />
+<title>Scam Alert</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f4f3;
+    --surface:#ffffff;
+    --surface-2:#ececea;
+    --ink:#191914;
+    --ink-2:#44453f;
+    --muted:#6d6e66;
+    --line:#dededa;
+    --red:#c22318;
+    --red-dark:#9c1a10;
+    --red-bg:#fdecea;
+    --amber:#9a6206;
+    --amber-bg:#fdf3d7;
+    --amber-line:#e8cf7a;
+    --green:#177245;
+    --green-bg:#e2f4e7;
+    --dark:#161613;
+    --dark-ink:#f5f2e9;
+    --dark-muted:#b9b7ab;
+    --focus:#1d6fd1;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(20,20,10,.06), 0 10px 30px -18px rgba(20,20,10,.25);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#101010;
+      --surface:#1a1a18;
+      --surface-2:#232320;
+      --ink:#f2f1ea;
+      --ink-2:#cfcdc2;
+      --muted:#9c9b90;
+      --line:#30302c;
+      --red:#ff6f61;
+      --red-dark:#ff8d80;
+      --red-bg:#3a1712;
+      --amber:#f0bd55;
+      --amber-bg:#3a2d0e;
+      --amber-line:#6d5716;
+      --green:#57c785;
+      --green-bg:#123324;
+      --dark:#e9e6da;
+      --dark-ink:#171713;
+      --dark-muted:#55544a;
+      --focus:#7db4f0;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.6);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *{animation:none !important; transition:none !important}
+  }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:"Sora","Manrope",sans-serif; line-height:1.18; margin:0; letter-spacing:-.01em}
+  p{margin:0}
+  a{color:inherit}
+  button{font:inherit; cursor:pointer}
+  input,textarea,select{font:inherit; color:inherit}
+  :focus-visible{outline:3px solid var(--focus); outline-offset:2px; border-radius:6px}
+  .wrap{max-width:1060px; margin:0 auto; padding:0 20px}
+
+  /* ---------- alert strip ---------- */
+  .strip{
+    background:var(--dark); color:var(--dark-ink);
+    font-size:.86rem; font-weight:600;
+  }
+  .strip .wrap{display:flex; gap:10px; align-items:center; padding-top:9px; padding-bottom:9px; flex-wrap:wrap}
+  .strip .dot{width:8px;height:8px;border-radius:50%;background:#e5484d;flex:none; animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .strip span:last-child{color:var(--dark-muted); font-weight:500}
+
+  /* ---------- hero ---------- */
+  .hero{padding:52px 0 10px}
+  .hero-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:44px; align-items:start}
+  .hero h1{font-size:clamp(2rem,5.2vw,3.35rem); font-weight:800}
+  .hero h1 .hl{color:var(--red); text-decoration:underline; text-decoration-thickness:.09em; text-underline-offset:.14em}
+  .hero .lead{margin-top:18px; font-size:1.08rem; color:var(--ink-2); max-width:34rem}
+  .hero-points{margin:24px 0 0; padding:0; list-style:none; display:grid; gap:12px}
+  .hero-points li{display:flex; gap:12px; align-items:flex-start; font-weight:600; color:var(--ink-2)}
+  .hero-points svg{flex:none; margin-top:3px}
+  .stat-row{display:flex; gap:12px; margin-top:30px; flex-wrap:wrap}
+  .stat{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:14px 18px; min-width:142px; box-shadow:var(--shadow)
+  }
+  .stat b{display:block; font-family:"Sora",sans-serif; font-size:1.45rem; line-height:1.1}
+  .stat span{font-size:.82rem; color:var(--muted); font-weight:600}
+
+  /* ---------- checker card ---------- */
+  .checker{
+    background:var(--surface); border:1px solid var(--line); border-radius:20px;
+    box-shadow:var(--shadow); padding:24px; position:sticky; top:18px;
+  }
+  .checker-head{display:flex; align-items:center; gap:12px; margin-bottom:6px}
+  .checker-head .badge{
+    width:42px;height:42px;border-radius:12px;background:var(--red-bg); color:var(--red);
+    display:grid; place-items:center; flex:none;
+  }
+  .checker-head h2{font-size:1.22rem}
+  .checker-head p{font-size:.88rem; color:var(--muted)}
+  .checker label{font-weight:700; font-size:.9rem; display:block; margin:16px 0 8px}
+  .checker textarea{
+    width:100%; min-height:118px; resize:vertical; border:1.5px solid var(--line);
+    border-radius:12px; padding:13px 14px; background:var(--bg); line-height:1.55;
+  }
+  .checker textarea::placeholder{color:var(--muted)}
+  .examples{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+  .examples span{font-size:.8rem; color:var(--muted); font-weight:700; align-self:center}
+  .chip{
+    border:1px solid var(--line); background:var(--surface); color:var(--ink-2);
+    border-radius:999px; padding:6px 13px; font-size:.82rem; font-weight:700;
+  }
+  .chip:hover{border-color:var(--red); color:var(--red)}
+  .check-btn{
+    margin-top:18px; width:100%; border:0; border-radius:12px; padding:15px 18px;
+    background:var(--red); color:#fff; font-weight:800; font-size:1.02rem;
+    display:flex; align-items:center; justify-content:center; gap:9px;
+  }
+  .check-btn:hover{background:var(--red-dark)}
+  .checker .fineprint{margin-top:12px; font-size:.8rem; color:var(--muted); text-align:center}
+
+  /* result */
+  .result{margin-top:20px; border-radius:14px; padding:18px; display:none}
+  .result.show{display:block}
+  .result.high{background:var(--red-bg); border:1.5px solid var(--red)}
+  .result.mid{background:var(--amber-bg); border:1.5px solid var(--amber-line)}
+  .result.low{background:var(--green-bg); border:1.5px solid var(--green)}
+  .result-top{display:flex; justify-content:space-between; align-items:flex-start; gap:14px}
+  .result .verdict{font-family:"Sora",sans-serif; font-size:1.28rem; font-weight:800}
+  .result.high .verdict{color:var(--red)}
+  .result.mid .verdict{color:var(--amber)}
+  .result.low .verdict{color:var(--green)}
+  .score{text-align:right; flex:none}
+  .score b{font-family:"Sora",sans-serif; font-size:1.6rem; line-height:1}
+  .score span{display:block; font-size:.72rem; font-weight:700; color:var(--muted); letter-spacing:.04em}
+  .meter{height:9px; border-radius:99px; background:rgba(127,127,110,.25); margin:14px 0 6px; overflow:hidden}
+  .meter i{display:block; height:100%; width:0; border-radius:99px; transition:width .5s ease}
+  .result.high .meter i{background:var(--red)}
+  .result.mid .meter i{background:var(--amber)}
+  .result.low .meter i{background:var(--green)}
+  .result .advice{font-weight:600; color:var(--ink-2); font-size:.95rem}
+  .flags{margin:14px 0 0; padding:0; list-style:none; display:grid; gap:9px}
+  .flags li{
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    padding:10px 13px; font-size:.9rem;
+  }
+  .flags li b{display:block; font-size:.92rem}
+  .flags li span{color:var(--ink-2)}
+  .result .next{margin-top:14px; font-size:.9rem; font-weight:700}
+  .result .next a{color:var(--red)}
+
+  /* ---------- sections ---------- */
+  section{padding:56px 0 4px}
+  .sec-head{max-width:44rem; margin-bottom:26px}
+  .sec-head h2{font-size:clamp(1.5rem,3.4vw,2rem); font-weight:800}
+  .sec-head p{margin-top:10px; color:var(--ink-2)}
+
+  /* reported case */
+  .case{
+    background:var(--dark); color:var(--dark-ink); border-radius:20px; padding:30px;
+    display:grid; grid-template-columns:auto 1fr; gap:26px; box-shadow:var(--shadow);
+  }
+  .case .shield{
+    width:64px;height:64px;border-radius:16px; background:#e5484d; color:#fff;
+    display:grid; place-items:center;
+  }
+  .case h3{font-size:1.3rem; color:var(--dark-ink)}
+  .case .site{font-family:"Sora",sans-serif; font-size:1.05rem; color:#ffb3ab; font-weight:700; word-break:break-all}
+  .case p{color:var(--dark-muted); margin-top:10px; max-width:46rem}
+  .case ul{margin:16px 0 0; padding:0; list-style:none; display:grid; gap:9px}
+  .case li{display:flex; gap:10px; align-items:flex-start; font-weight:600; font-size:.95rem}
+  .case li svg{flex:none; margin-top:4px}
+  .tag{
+    display:inline-block; font-size:.72rem; font-weight:800; letter-spacing:.06em;
+    border:1px solid currentColor; border-radius:999px; padding:3px 10px; vertical-align:middle;
+  }
+  .case .tag{color:#ffb3ab; margin-left:8px}
+  .case .action{margin-top:18px; font-size:.92rem; color:var(--dark-ink)}
+  .case .action b{color:#fff}
+
+  /* filters + scam grid */
+  .filters{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:22px}
+  .filter{
+    border:1.5px solid var(--line); background:var(--surface); border-radius:999px;
+    padding:8px 17px; font-weight:700; font-size:.9rem; color:var(--ink-2);
+  }
+  .filter[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px}
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:0;
+  }
+  .card.hide{display:none}
+  .card .icon{
+    width:44px;height:44px;border-radius:11px; display:grid; place-items:center; margin-bottom:14px;
+    background:var(--surface-2); color:var(--ink);
+  }
+  .card.risk-high .icon{background:var(--red-bg); color:var(--red)}
+  .card h3{font-size:1.08rem; display:flex; align-items:center; gap:9px; flex-wrap:wrap}
+  .card .how{margin-top:9px; color:var(--ink-2); font-size:.93rem}
+  .card .signs{margin-top:13px; padding-top:13px; border-top:1px dashed var(--line)}
+  .card .signs b{font-size:.8rem; letter-spacing:.05em; color:var(--muted)}
+  .card .signs ul{margin:7px 0 0; padding-left:18px; color:var(--ink-2); font-size:.9rem; display:grid; gap:4px}
+  .sev{font-size:.7rem; font-weight:800; letter-spacing:.05em; padding:3px 9px; border-radius:999px}
+  .sev.high{background:var(--red-bg); color:var(--red)}
+  .sev.med{background:var(--amber-bg); color:var(--amber)}
+
+  /* red flags */
+  .flags-grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .flagbox{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow)}
+  .flagbox h3{font-size:1.1rem; margin-bottom:16px; display:flex; gap:10px; align-items:center}
+  .flagbox ul{margin:0; padding:0; list-style:none; display:grid; gap:13px}
+  .flagbox li{display:flex; gap:11px; align-items:flex-start; color:var(--ink-2); font-weight:600; font-size:.95rem}
+  .flagbox li svg{flex:none; margin-top:3px; color:var(--red)}
+  .rule{
+    margin-top:16px; border-radius:var(--radius); padding:22px 24px;
+    background:var(--red-bg); border:1.5px solid var(--red);
+    display:flex; gap:16px; align-items:center;
+  }
+  .rule svg{flex:none; color:var(--red)}
+  .rule p{font-weight:700}
+  .rule p b{color:var(--red)}
+
+  /* emergency steps */
+  .steps{display:grid; grid-template-columns:repeat(5,1fr); gap:14px; counter-reset:step}
+  .step{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px; box-shadow:var(--shadow);
+  }
+  .step .num{
+    width:34px;height:34px;border-radius:50%; background:var(--ink); color:var(--bg);
+    display:grid; place-items:center; font-family:"Sora",sans-serif; font-weight:800; margin-bottom:13px;
+  }
+  .step h3{font-size:.99rem; margin-bottom:7px}
+  .step p{font-size:.88rem; color:var(--ink-2)}
+  .help-row{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:16px}
+  .help{
+    border:1.5px solid var(--line); border-radius:var(--radius); padding:20px; background:var(--surface);
+  }
+  .help b{font-family:"Sora",sans-serif; display:block; font-size:1rem}
+  .help .num-big{font-family:"Sora",sans-serif; font-size:1.7rem; font-weight:800; color:var(--red); line-height:1.25}
+  .help p{font-size:.88rem; color:var(--ink-2)}
+  .help a{font-weight:800; color:var(--red); word-break:break-all}
+
+  /* report builder */
+  .report{
+    background:var(--surface); border:1px solid var(--line); border-radius:20px;
+    box-shadow:var(--shadow); padding:28px; display:grid; grid-template-columns:1fr 1fr; gap:28px;
+  }
+  .report h3{font-size:1.15rem; margin-bottom:4px}
+  .report .sub{color:var(--muted); font-size:.9rem}
+  .field{margin-top:15px}
+  .field label{font-weight:700; font-size:.88rem; display:block; margin-bottom:6px}
+  .field input,.field textarea,.field select{
+    width:100%; border:1.5px solid var(--line); border-radius:10px; padding:11px 13px; background:var(--bg);
+  }
+  .field textarea{min-height:84px; resize:vertical}
+  .gen-btn{
+    margin-top:18px; border:0; background:var(--ink); color:var(--bg); border-radius:11px;
+    padding:13px 20px; font-weight:800; width:100%;
+  }
+  .output-box{display:flex; flex-direction:column}
+  .output-box label{font-weight:700; font-size:.88rem; margin-bottom:6px}
+  #reportOut{
+    flex:1; min-height:300px; border:1.5px dashed var(--line); border-radius:12px; padding:15px;
+    background:var(--bg); font-size:.9rem; line-height:1.65; white-space:pre-wrap; word-break:break-word;
+    color:var(--ink-2);
+  }
+  .out-actions{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
+  .out-actions button{
+    border:1.5px solid var(--line); background:var(--surface); border-radius:10px;
+    padding:10px 17px; font-weight:800; font-size:.9rem;
+  }
+  .out-actions button.primary{background:var(--red); border-color:var(--red); color:#fff}
+  .copied{font-size:.85rem; font-weight:700; color:var(--green); align-self:center; display:none}
+
+  footer{padding:54px 0 40px; margin-top:56px; border-top:1px solid var(--line)}
+  footer .wrap{display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; align-items:flex-start}
+  footer p{color:var(--muted); font-size:.88rem; max-width:36rem}
+  footer .brand{font-family:"Sora",sans-serif; font-weight:800; font-size:1.05rem; color:var(--ink)}
+
+  @media (max-width: 920px){
+    .hero-grid{grid-template-columns:1fr}
+    .checker{position:static}
+    .grid{grid-template-columns:repeat(2,1fr)}
+    .steps{grid-template-columns:repeat(2,1fr)}
+    .help-row{grid-template-columns:1fr}
+    .report{grid-template-columns:1fr}
+    .case{grid-template-columns:1fr}
+  }
+  @media (max-width: 560px){
+    .hero{padding-top:36px}
+    .grid{grid-template-columns:1fr}
+    .flags-grid{grid-template-columns:1fr}
+    .steps{grid-template-columns:1fr}
+    .checker,.report{padding:20px}
+    .case{padding:22px}
+    .rule{flex-direction:column; align-items:flex-start}
+    .stat{min-width:0; flex:1}
+  }
+</style>
+</head>
+<body>
+
+<div class="strip" role="note">
+  <div class="wrap">
+    <span class="dot" aria-hidden="true"></span>
+    <span>Aham warning:</span>
+    <span>WhatsApp par "task complete karo, paisay kamao" wale job scams Pakistan me tezi se phail rahe hain — pehle check karo, paisay baad me socho.</span>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- HERO + CHECKER -->
+  <div class="hero">
+    <div class="hero-grid">
+      <div>
+        <h1>Koi number, link ya offer <span class="hl">shak wala</span> lagay? Pehle check karo.</h1>
+        <p class="lead">Message, website ya number paste karo — Scam Alert uske andar chhupe red flags dhoond kar batayega ke ye kitna khatarnaak lag raha hai, aur tumhe kya karna chahiye.</p>
+        <ul class="hero-points">
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green)" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+            Task scam, fake investment, OTP fraud aur fake shopping stores ki pehchan
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green)" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+            Scam ho jaye to FIA Cybercrime ke liye tayyar report — ek click me
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="color:var(--green)" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+            Jo kuch tum paste karte ho, wo tumhare phone/browser se bahar nahi jata
+          </li>
+        </ul>
+        <div class="stat-row" aria-label="Scam facts">
+          <div class="stat"><b>6</b><span>common scam types ki guide</span></div>
+          <div class="stat"><b>25+</b><span>red flags jo checker dhoondta hai</span></div>
+          <div class="stat"><b>1991</b><span>FIA Cybercrime helpline</span></div>
+        </div>
+      </div>
+
+      <!-- CHECKER -->
+      <div class="checker" id="checker">
+        <div class="checker-head">
+          <div class="badge" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-3.6 8-10V5.2L12 2 4 5.2V12c0 6.4 8 10 8 10z"/><circle cx="12" cy="10" r="3"/><path d="m12 13 .5 3"/></svg>
+          </div>
+          <div>
+            <h2>Scam Checker</h2>
+            <p>Number, website link ya poora message — kuch bhi paste karo</p>
+          </div>
+        </div>
+
+        <label for="checkInput">Shak wali cheez yahan paste karo</label>
+        <textarea id="checkInput" placeholder="Misal:&#10;• Website: shoppinggroup8.com&#10;• Number: 0330-XXXXXXX&#10;• Message: &quot;Mubarak ho! Aap ne Rs 50,000 jeet liye hain, claim ke liye apna OTP bhejen&quot;"></textarea>
+
+        <div class="examples">
+          <span>Try karo:</span>
+          <button type="button" class="chip" data-example="site">Ek website</button>
+          <button type="button" class="chip" data-example="prize">Prize wala message</button>
+          <button type="button" class="chip" data-example="task">Task job offer</button>
+          <button type="button" class="chip" data-example="safe">Ek normal message</button>
+        </div>
+
+        <button type="button" class="check-btn" id="checkBtn">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          Abhi check karo
+        </button>
+        <p class="fineprint">Check tumhare browser ke andar hota hai — koi data kahin send nahi hota.</p>
+
+        <div class="result" id="result" role="status" aria-live="polite">
+          <div class="result-top">
+            <div>
+              <div class="verdict" id="verdictText"></div>
+              <div id="verdictType" style="font-weight:700; font-size:.9rem; color:var(--ink-2)"></div>
+            </div>
+            <div class="score"><b id="scoreNum">0</b><span>RISK SCORE / 100</span></div>
+          </div>
+          <div class="meter" aria-hidden="true"><i id="meterFill"></i></div>
+          <p class="advice" id="adviceText"></p>
+          <ul class="flags" id="flagList"></ul>
+          <p class="next" id="nextStep"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORTED CASE -->
+  <section aria-labelledby="case-h">
+    <div class="sec-head">
+      <h2 id="case-h">Asli report shuda case</h2>
+      <p>Ye case ek asli user ne report kiya tha. Naam aur pattern yaad rakho — isi tarah ke scams roz naye naam se wapas aate hain.</p>
+    </div>
+    <article class="case">
+      <div class="shield" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-3.6 8-10V5.2L12 2 4 5.2V12c0 6.4 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+      </div>
+      <div>
+        <h3>Fake "Amazon" Task Website <span class="tag">USER-REPORTED · UNVERIFIED LISTING</span></h3>
+        <div class="site">shoppinggroup8.com</div>
+        <p>Instagram video se ek shakhs ne rabta kiya aur is site par le gaya. Site par Amazon ki branding thi, lekin domain Amazon ka nahi tha. Account me "Recharge", "Withdrawal" aur "Invite task" ke section thay — paisay nikalwane ke liye pehle aur paisay daalne ko kaha jata hai. User ka SadaPay account is se bind ho gaya tha, aur site par account delete ya card unbind karne ka koi tareeqa mojood nahi tha — sirf "customer service se rabta karo", jiska koi contact hi nahi.</p>
+        <ul>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e5484d" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg> Bari brand ka naam, lekin website ka domain us brand ka nahi</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e5484d" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg> Withdrawal "unlock" karne ke liye recharge / deposit ki shart</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e5484d" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg> Recruiter sirf WhatsApp/Instagram par — koi daftar, koi official email nahi</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e5484d" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg> Account delete / card unbind ka koi option nahi</li>
+        </ul>
+        <p class="action"><b>Sahi action:</b> SadaPay card foran freeze/replace karo, mazeed deposit bilkul na karo ("withdrawal unlock" sab se bara jaal hai), recruiter ko block karo, screenshots mehfooz rakho, aur FIA Cybercrime par report karo.</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- SCAM TYPES -->
+  <section aria-labelledby="types-h">
+    <div class="sec-head">
+      <h2 id="types-h">Pakistan me aam scams — pehchan seekho</h2>
+      <p>Har scam ka tareeqa alag hai, lekin jaal hamesha aik jaisa hota hai: jaldi karwao, lalach do, aur sochne ka waqt na do. Jo type tumhe nazar aaye, uski nishaniyan yaad kar lo.</p>
+    </div>
+    <div class="filters" role="group" aria-label="Scam type filter">
+      <button type="button" class="filter" data-filter="all" aria-pressed="true">Sab</button>
+      <button type="button" class="filter" data-filter="job" aria-pressed="false">Job / Task</button>
+      <button type="button" class="filter" data-filter="money" aria-pressed="false">Paisay / Investment</button>
+      <button type="button" class="filter" data-filter="call" aria-pressed="false">Call / SMS</button>
+      <button type="button" class="filter" data-filter="shopping" aria-pressed="false">Shopping</button>
+    </div>
+    <div class="grid" id="scamGrid">
+      <article class="card risk-high" data-cat="job">
+        <div class="icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+        <h3>Task / Job Scam <span class="sev high">BOHOT AAM</span></h3>
+        <p class="how">"Ghar bethay roz Rs 2,000–5,000 kamao — sirf products like karo, video dekho, chhote task karo." Shuru me chhoti rakam milti bhi hai taake bharosa bane. Phir bara task aata hai jiske liye pehle apne paisay "recharge" karne parte hain — aur wahi paisay phans jate hain.</p>
+        <div class="signs"><b>NISHANIYAN</b>
+          <ul>
+            <li>Job sirf WhatsApp/Telegram par, koi interview ya daftar nahi</li>
+            <li>Kaam shuru karne ya withdrawal ke liye pehle deposit</li>
+            <li>Website par Recharge / VIP Level / Invite Task jese section</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card risk-high" data-cat="money">
+        <div class="icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></div>
+        <h3>Fake Investment / Double Paisay <span class="sev high">BOHOT NUQSAN</span></h3>
+        <p class="how">"Rs 10,000 lagao, aik hafte me Rs 20,000 wapas." Crypto, trading ya "online business" ke naam par paisay le kar pehle chhota profit dikhate hain, phir bari rakam lagwa kar ghayab ho jate hain. Asli investment me munafa kabhi guaranteed nahi hota.</p>
+        <div class="signs"><b>NISHANIYAN</b>
+          <ul>
+            <li>Guaranteed ya "double" munafe ka wada</li>
+            <li>Doston ko laane par extra bonus (pyramid wali boo)</li>
+            <li>Paisay personal JazzCash/EasyPaisa number par bhejne ko kehna</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card risk-high" data-cat="call">
+        <div class="icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L8.1 10a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.5 2.9.7a2 2 0 0 1 1.6 2z"/></svg></div>
+        <h3>Bank / OTP Call Scam <span class="sev high">BOHOT AAM</span></h3>
+        <p class="how">Call aati hai: "Main bank se bol raha hoon, aapka account band ho raha hai, OTP batayen." Ya "aapke naam par case hai." Darr aur jaldi paida karke OTP, PIN ya card number nikalwa lete hain. Yaad rakho: asli bank, PTA ya police kabhi phone par OTP nahi maangte.</p>
+        <div class="signs"><b>NISHANIYAN</b>
+          <ul>
+            <li>OTP, PIN, password ya card ke aakhri number maangna</li>
+            <li>"Account abhi band ho jayega" jesi dhamki aur jaldi</li>
+            <li>Koi app (AnyDesk / screen-share) install karne ko kehna</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card" data-cat="shopping">
+        <div class="icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+        <h3>Fake Online Store <span class="sev med">AAM</span></h3>
+        <p class="how">Instagram/Facebook page par iPhone, branded shoes ya makeup adhi se bhi kam qeemat par. Advance payment le kar ya to ghayab, ya nakli/used cheez bhej dete hain. Page naya hota hai, comments band hote hain, aur address sirf "online store" likha hota hai.</p>
+        <div class="signs"><b>NISHANIYAN</b>
+          <ul>
+            <li>Qeemat market se ghair-mamooli kam</li>
+            <li>Sirf advance payment — cash on delivery se inkaar</li>
+            <li>Page chand din purana, reviews/check-in kuch nahi</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card" data-cat="call">
+        <div class="icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div>
+        <h3>SIM Promo / VAS Trap <span class="sev med">ROZ KA NUQSAN</span></h3>
+        <p class="how">SMS aata hai: "Mubarak! Aap ne quiz jeeta, ye app download karo" — asal me ek paid service subscribe ho jati hai jo roz Rs 6–8 balance kaat'ti rehti hai. Balance ahista ahista ghayab hota rehta hai aur pata bhi nahi chalta.</p>
+        <div class="signs"><b>NISHANIYAN</b>
+          <ul>
+            <li>Anjaan SMS me link/app download ka kehna</li>
+            <li>Baghair istemal ke balance kam hona</li>
+            <li>Bachao: Jazz par *6611# se active services dekh kar cancel karo; Ufone par bhi app/helpline se VAS band karwao</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card" data-cat="money">
+        <div class="icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12v10H4V12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
+        <h3>Prize / Lottery Scam <span class="sev med">AAM</span></h3>
+        <p class="how">"Aap ne lucky draw me car / Rs 5 lakh jeet liye hain!" Jis muqable me tum ne hissa hi nahi liya, usme jeetna mumkin nahi. Prize "release" karne ke liye tax, processing fee ya OTP maangte hain — wohi asal jaal hai.</p>
+        <div class="signs"><b>NISHANIYAN</b>
+          <ul>
+            <li>Baghair hissa liye "jeet" ki khabar</li>
+            <li>Prize se pehle fee / tax / OTP ki shart</li>
+            <li>Sirf ajnabi mobile number se rabta, official channel nahi</li>
+          </ul>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- RED FLAGS -->
+  <section aria-labelledby="flags-h">
+    <div class="sec-head">
+      <h2 id="flags-h">Red flags — ye dikhay to ruk jao</h2>
+      <p>Ek nishani ittefaq ho sakti hai. Do ya zyada ek saath hon to samajh lo jaal bichha hua hai.</p>
+    </div>
+    <div class="flags-grid">
+      <div class="flagbox">
+        <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Message / call me</h3>
+        <ul>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg> "Abhi, foran, sirf aaj" — sochne ka waqt na dena</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg> OTP, PIN, password ya CNIC number maangna</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4 1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg> Paisay milne se pehle paisay bhejne ko kehna</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4 1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg> "Ye baat kisi ko mat batana" — khamoshi ki shart</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4 1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg> Ghalat Urdu/English, ajeeb si spelling, screenshot jese "official" letter</li>
+        </ul>
+      </div>
+      <div class="flagbox">
+        <h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Website / page me</h3>
+        <ul>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg> Bari brand ka logo, lekin domain doosra (jaise shoppinggroup8.com par "Amazon")</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4 1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg> Account delete, refund ya rabte ka koi saaf tareeqa nahi</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4 1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg> Payment sirf personal number / direct transfer par</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4 1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg> Balance screen par dikhta hai, lekin nikalta kabhi nahi</li>
+          <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4 1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg> Har kaam ke liye naya "level", nayi fee, naya recharge</li>
+        </ul>
+      </div>
+    </div>
+    <div class="rule">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v5"/><path d="M12 16.5h.01"/></svg>
+      <p>Sunehra usool: <b>Jo paisay nikalwane ke liye pehle paisay maange, wo 100% scam hai.</b> Asli job, asli prize aur asli bank — teeno kabhi aisi shart nahi lagate.</p>
+    </div>
+  </section>
+
+  <!-- EMERGENCY -->
+  <section aria-labelledby="emg-h">
+    <div class="sec-head">
+      <h2 id="emg-h">Scam ho gaya hai? Pehle ye 5 kaam karo</h2>
+      <p>Ghabrana fitri hai, lekin pehle ghante ke kaam sab se ahem hain. Isi tartib me karo.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><h3>Card / account freeze karo</h3><p>SadaPay, JazzCash, EasyPaisa ya bank app se card foran freeze karo. Helpline par call karke block bhi karwao.</p></div>
+      <div class="step"><div class="num">2</div><h3>Passwords badlo</h3><p>Email, bank aur wallet ke passwords foran badlo — khaas tor par jo password scam site par istemal hua tha.</p></div>
+      <div class="step"><div class="num">3</div><h3>Saboot mehfooz karo</h3><p>Chats, numbers, website links, payment receipts ke screenshots lo. Chat delete mat karo — yehi tumhara saboot hai.</p></div>
+      <div class="step"><div class="num">4</div><h3>Mazeed paisay mat bhejo</h3><p>"Withdrawal unlock" ya "aakhri fee" ke naam par aur paisay bhejna nuqsan dugna kar deta hai. Rabta yahin khatam karo.</p></div>
+      <div class="step"><div class="num">5</div><h3>Report karo</h3><p>FIA Cybercrime par online shikayat darj karo aur number ko block + report karo taake doosre bach saken. Neeche report banane wala tool hai.</p></div>
+    </div>
+    <div class="help-row">
+      <div class="help">
+        <b>FIA Cybercrime — Helpline</b>
+        <div class="num-big">1991</div>
+        <p>Online shikayat: <a href="https://complaint.fia.gov.pk" target="_blank" rel="noopener">complaint.fia.gov.pk</a> — saboot (screenshots) attach karna na bhoolna.</p>
+      </div>
+      <div class="help">
+        <b>PTA — Ghalat SMS / Number ki Shikayat</b>
+        <div class="num-big">0800-256813</div>
+        <p>Fraud number ya spam SMS ke liye PTA ki toll-free helpline. PTA ka "DIRBS / spam report" system number block karwane me madad karta hai.</p>
+      </div>
+      <div class="help">
+        <b>Apna Bank / Wallet</b>
+        <div class="num-big">Card ke peeche wala number</div>
+        <p>Har bank aur wallet (SadaPay, JazzCash, EasyPaisa) ki apni helpline hoti hai. Transaction rokne ki koshish ke liye jitni jaldi call karo, utna behtar.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- REPORT BUILDER -->
+  <section aria-labelledby="rep-h">
+    <div class="sec-head">
+      <h2 id="rep-h">Report tayyar karo</h2>
+      <p>Detail bharo — ek saaf, mukammal shikayat ka text ban jayega jo tum FIA portal par paste kar sakte ho ya WhatsApp par ghar walon / doston ko warning ke tor par bhej sakte ho. Ye text sirf yahin banta hai, kahin save nahi hota.</p>
+    </div>
+    <div class="report">
+      <div>
+        <h3>Tumhari tafseel</h3>
+        <p class="sub">Jo maloom hai wahi likho — khaali khana bhi chalega.</p>
+        <div class="field">
+          <label for="rType">Scam ki type</label>
+          <select id="rType">
+            <option>Task / Job Scam</option>
+            <option>Fake Investment</option>
+            <option>Bank / OTP Call Scam</option>
+            <option>Fake Online Store</option>
+            <option>SIM Promo / VAS Trap</option>
+            <option>Prize / Lottery Scam</option>
+            <option>Doosra scam</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="rTarget">Scammer ka number / website / page</label>
+          <input id="rTarget" type="text" placeholder="Misal: shoppinggroup8.com ya 03XX-XXXXXXX" />
+        </div>
+        <div class="field">
+          <label for="rAmount">Kitna nuqsan hua? (Rs — agar koi nahi to 0 likho)</label>
+          <input id="rAmount" type="text" inputmode="numeric" placeholder="Misal: 5000" />
+        </div>
+        <div class="field">
+          <label for="rWhat">Kya hua tha? (2–3 jumlo me)</label>
+          <textarea id="rWhat" placeholder="Misal: Instagram se rabta hua, website par task diye, withdrawal ke liye recharge maanga gaya..."></textarea>
+        </div>
+        <div class="field">
+          <label for="rDate">Tareekh (kab hua)</label>
+          <input id="rDate" type="text" placeholder="Misal: 22 October 2026" />
+        </div>
+        <button type="button" class="gen-btn" id="genBtn">Report ka text banao</button>
+      </div>
+      <div class="output-box">
+        <label for="reportOut">Tayyar report</label>
+        <div id="reportOut">Left taraf detail bhar kar "Report ka text banao" dabao — tumhari shikayat yahan ban kar aayegi.
+
+Isi text ko:
+• FIA portal (complaint.fia.gov.pk) par paste karo
+• Ya doston/ghar walon ko bhej kar unhe isi scam se bachao</div>
+        <div class="out-actions">
+          <button type="button" class="primary" id="copyBtn">Copy karo</button>
+          <button type="button" id="dlBtn">.txt file download karo</button>
+          <span class="copied" id="copiedMsg">Copy ho gaya ✓</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="brand">Scam Alert</div>
+      <p style="margin-top:8px">Pakistan ke aam logon ke liye — taake koi aur kisi jaal me na phanse.</p>
+    </div>
+    <p>Checker pattern-based andaza lagata hai — ye kisi number ya site ke scam hone ka qanuni saboot nahi. Kisi par ilzaam lagane se pehle saboot ke saath FIA/PTA par report karo. "Koi flag nahi mila" ka matlab bhi ye nahi ke cheez 100% mehfooz hai — hamesha ehtiyat rakho.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ SCAM CHECKER ============ */
+  var OFFICIAL = {
+    amazon:["amazon.com","amazon.co.uk","amazon.ae","amazon.in"],
+    daraz:["daraz.pk","daraz.com"],
+    easypaisa:["easypaisa.com.pk"],
+    jazzcash:["jazzcash.com.pk"],
+    sadapay:["sadapay.pk","sadapay.com"],
+    pta:["pta.gov.pk"],
+    ubl:["ubldigital.com","ubl.com.pk"],
+    hbl:["hbl.com","hblpeople.com"],
+    meezan:["meezanbank.com"],
+    jazz:["jazz.com.pk"],
+    ufone:["ufone.com"],
+    zong:["zong.com.pk"],
+    telenor:["telenor.com.pk"]
+  };
+  var KNOWN_BAD = [
+    {match:"shoppinggroup8", name:"shoppinggroup8.com", detail:"Ye site pehle hi ek user report kar chuka hai: fake Amazon branding wali task site, jis par withdrawal ke liye recharge maanga jata hai."}
+  ];
+  var SUSPICIOUS_TLD = [".xyz",".top",".click",".store",".online",".site",".fun",".live",".buzz",".work",".quest",".sbs",".cfd"];
+
+  var PHRASES = [
+    {re:/\b(otp|one[\s-]?time password|pin code|card ka (pin|number)|password)\b.*\b(batao|bataen|bhejo|bhejen|share|do|den)\b|\b(batao|bhejo|share karo)\b.*\b(otp|pin|password)\b/i, w:45, title:"OTP / PIN / password maanga gaya", why:"Koi bhi asli bank, company ya idara tum se OTP, PIN ya password nahi maangta. Ye maangne wala hamesha scammer hota hai.", type:"OTP Fraud"},
+    {re:/withdrawal.*(unlock|ke liye|ky liye)|recharge (kar|karo|karna|krna).*(withdraw|task|level)|deposit.*(withdraw|unlock)/i, w:45, title:"Withdrawal ke liye deposit/recharge ki shart", why:"\"Paisay nikalwane ke liye pehle paisay daalo\" — ye task scam ka sab se wazeh jaal hai. Asli job kabhi aisi shart nahi lagati.", type:"Task / Job Scam"},
+    {re:/(task (complete|karo|krna|milega)|like karo.*(rs|paisa|kamai)|video (dekho|dekh).*(rs|kamao|kamai)|ghar beth[ay]*.*(roz|daily).*(rs|kamao|kamai|income))/i, w:32, title:"\"Task karo, paisay kamao\" wali offer", why:"Chhote task ke badle bari rozana kamai ka wada task scam ki pehchan hai — shuru me chhota faida dikha kar recharge karwaya jata hai.", type:"Task / Job Scam"},
+    {re:/(double (paisa|money|ho jayega)|munafa guaranteed|guaranteed (profit|munafa|return)|100% profit|aik haft[ay]* me.*double)/i, w:38, title:"Guaranteed / double munafe ka wada", why:"Asli investment me munafa kabhi guaranteed nahi hota. \"Double\" ka wada fraud ki classic nishani hai.", type:"Fake Investment"},
+    {re:/(jeet (liye|gaye|chuke)|lucky draw|lottery|inaam|prize).*(claim|tax|fee|processing|otp)|(claim|tax|fee).*(jeet|inaam|prize|lottery)/i, w:36, title:"Prize ke liye fee / tax / OTP ki shart", why:"Asli inaam kabhi pehle fee nahi maangta. Prize se pehle paisay ya OTP maangna matlab jaal hai.", type:"Prize / Lottery Scam"},
+    {re:/(aap ?(ne|ny)|tum ?(ne|ny)).*(jeet|jeeta|jeeti)|mubarak ho.*(jeet|inaam|prize|lottery)/i, w:26, title:"Baghair hissa liye \"jeet\" ki khabar", why:"Jis muqable/lottery me tum ne hissa hi nahi liya, us me jeetna mumkin nahi.", type:"Prize / Lottery Scam"},
+    {re:/(account|khata).*(band|block|suspend).*(ho jayega|ho raha|hone wala)|foran.*(verify|tasdeeq)/i, w:26, title:"Account band hone ki dhamki + jaldi", why:"Darr aur jaldi paida karna scammer ki chal hai taake tum sochay baghair OTP ya detail de do.", type:"Bank / OTP Scam"},
+    {re:/(anydesk|teamviewer|screen ?share|remote app).*(install|download)/i, w:40, title:"Screen-share app install karne ko kehna", why:"Screen-share app se scammer tumhare phone ki har cheez — OTP sameyt — dekh sakta hai. Bank kabhi ye nahi kehta.", type:"Bank / OTP Scam"},
+    {re:/(sirf aaj|aakhri mauqa|last chance|offer khatam|abhi (kar|karo|krna)|jaldi karo)/i, w:14, title:"Ghair-mamooli jaldi / pressure", why:"\"Sirf aaj\" wala pressure is liye hota hai ke tum verify karne ka waqt na nikaal sako.", type:"Pressure Tactic"},
+    {re:/(processing fee|release fee|tax (bhejo|jama|ada)|fee jama kar)/i, w:24, title:"Paisay milne se pehle fee ki maang", why:"Jo cheez \"free\" ya \"jeeti hui\" ho, us par pehle fee lagana scam ki nishani hai.", type:"Advance Fee Fraud"},
+    {re:/(cnic|shanakhti card).*(bhejo|batao|number do|tasveer)/i, w:22, title:"CNIC number / tasveer ki maang", why:"CNIC ajnabi ko dena identity fraud ka darwaza khol deta hai — sirf official channel par do.", type:"Identity Fraud"},
+    {re:/(vip level|level (up|barhao)|invite karo.*bonus|dosto?n ko la[ao].*bonus)/i, w:20, title:"VIP level / doston ko laane par bonus", why:"Level aur referral bonus pyramid-style scam ka hissa hote hain — paisa naye logon se aata hai, asal kaam se nahi.", type:"Fake Investment"},
+    {re:/(part ?time|work from home).*(rs ?[0-9,]+|rozana|daily).*(kamai|income|salary)/i, w:20, title:"Bina tajurbe ke bari rozana kamai ka wada", why:"Baghair skill/interview ke hazaron ki rozana kamai ka wada aam tor par task scam ka pehla qadam hota hai.", type:"Task / Job Scam"}
+  ];
+
+  function extractDomain(text){
+    var m = text.match(/(?:https?:\/\/)?(?:www\.)?([a-z0-9-]+\.[a-z]{2,}(?:\.[a-z]{2,})?)/i);
+    return m ? m[1].toLowerCase() : null;
+  }
+  function looksLikeUrl(text){
+    return /(https?:\/\/|www\.|\.[a-z]{2,}(\/|\s|$))/i.test(text);
+  }
+
+  var EXAMPLES = {
+    site:"shoppinggroup8.com — is site par Amazon wale task kar ke paisay kamao, pehle recharge karna hoga",
+    prize:"Mubarak ho! Aap ne lucky draw me Rs 50,000 jeet liye hain. Prize claim karne ke liye Rs 1,500 processing fee bhejen aur apna OTP bataen.",
+    task:"Part time work from home! Sirf products like karo aur roz Rs 3,000 kamai. Task complete karne ke liye WhatsApp par rabta karo, shuru me chhota recharge hoga.",
+    safe:"Assalam-o-Alaikum, kal ki class ka time tabdeel ho gaya hai, ab academy 4 baje ki bajaye 5 baje hogi. — Sir"
+  };
+
+  var chips = document.querySelectorAll("[data-example]");
+  chips.forEach(function(ch){
+    ch.addEventListener("click", function(){
+      document.getElementById("checkInput").value = EXAMPLES[ch.getAttribute("data-example")] || "";
+      document.getElementById("checkInput").focus();
+    });
+  });
+
+  function analyze(raw){
+    var text = raw.trim();
+    var flags = [];
+    var score = 0;
+    var scamType = "";
+    function add(w, title, why, type){
+      flags.push({w:w, title:title, why:why});
+      score += w;
+      if(type && !scamType) scamType = type;
+    }
+
+    var lower = text.toLowerCase();
+
+    // Known reported
+    KNOWN_BAD.forEach(function(k){
+      if(lower.indexOf(k.match) !== -1){
+        add(60, "Pehle se report shuda website: " + k.name, k.detail, "Task / Job Scam");
+      }
+    });
+
+    // Brand impersonation / domain checks
+    var domain = extractDomain(text);
+    if(domain){
+      Object.keys(OFFICIAL).forEach(function(brand){
+        if(domain.indexOf(brand) !== -1 && OFFICIAL[brand].indexOf(domain) === -1){
+          add(42, "\"" + brand.toUpperCase() + "\" ka naam, lekin domain nakli", "Domain " + domain + " hai, jabke " + brand + " ki official site " + OFFICIAL[brand].join(" / ") + " hai. Bari brand ka naam chhoti si ghalat domain me chhupana classic phishing hai.", "Fake Website");
+        }
+      });
+      SUSPICIOUS_TLD.forEach(function(tld){
+        if(domain.endsWith(tld)){
+          add(10, "Ajeeb si domain ending (" + tld + ")", "Bank, brand aur sarkari idare aam tor par .com / .com.pk / .gov.pk istemal karte hain. Sasti ajnabi endings scam sites par aam hain — akele ye saboot nahi, lekin doosri nishaniyon ke saath khatarnaak hai.", "");
+        }
+      });
+      if(/https?:\/\/(?:\d{1,3}\.){3}\d{1,3}/.test(text)){
+        add(30, "Link me website ke naam ki jagah numbers (IP address)", "Asli companies apna domain naam istemal karti hain, numbers wala address nahi.", "Fake Website");
+      }
+      if(/(bit\.ly|tinyurl|shorturl|rb\.gg|t\.co\/[a-z0-9]+)/i.test(text) && /(rs|paisa|jeet|otp|fee|bank)/i.test(text)){
+        add(16, "Chhota kiya gaya (short) link + paisay wali baat", "Short link asal website chhupa deta hai. Paisay ya OTP wali baat ke saath ye mila ho to link mat kholo.", "");
+      }
+      if(!/https:\/\//i.test(text) && looksLikeUrl(text) && /(login|account|bank|payment|recharge)/i.test(text)){
+        add(12, "Bina https ke login/payment wali site", "Paisay ya login wali site par https (taala wala nishan) lazmi hai. Is ke baghair data mehfooz nahi.", "");
+      }
+    }
+
+    // Phrase patterns
+    PHRASES.forEach(function(p){
+      if(p.re.test(text)) add(p.w, p.title, p.why, p.type);
+    });
+
+    // Bare number checks
+    var numMatch = text.replace(/[\s-]/g,"").match(/(\+?\d{10,15})/);
+    if(numMatch && text.trim().length < 40){
+      var n = numMatch[1];
+      if(/^\+?(?!92)\d{10,}/.test(n) && !/^\+92/.test(n) && !/^0/.test(n)){
+        add(14, "Ghair-mulki / ajnabi number", "Pakistan ke andar rehte hue ghair-mulki number se bank/job/prize ki baat aana shak wala hai. Akele ye saboot nahi, ehtiyat rakho.", "");
+      }
+    }
+
+    if(score > 100) score = 100;
+    flags.sort(function(a,b){ return b.w - a.w; });
+    return {score:score, flags:flags, type:scamType};
+  }
+
+  var resultBox = document.getElementById("result");
+  document.getElementById("checkBtn").addEventListener("click", function(){
+    var raw = document.getElementById("checkInput").value;
+    if(!raw.trim()){
+      document.getElementById("checkInput").focus();
+      document.getElementById("checkInput").placeholder = "Pehle yahan kuch paste karo — phir check dabao.";
+      return;
+    }
+    var r = analyze(raw);
+    var verdict, advice, band;
+    if(r.score >= 55){
+      band = "high"; verdict = "Khatarnaak — ye scam lag raha hai";
+      advice = "Is par bilkul bharosa na karo. Koi paisa mat bhejo, OTP/detail mat do, aur link dobara mat kholo. Agar paisay bhej diye hain to neeche wale 5 emergency steps abhi karo.";
+    } else if(r.score >= 25){
+      band = "mid"; verdict = "Shak wala hai — ehtiyat lazmi";
+      advice = "Is me scam ki nishaniyan mili hain. Aage barhne se pehle official channel se verify karo (khud number mila kar / official app se). Paisay ya OTP to bilkul mat do.";
+    } else if(r.score > 0){
+      band = "low"; verdict = "Halki si nishani mili hai";
+      advice = "Koi wazeh saboot nahi mila, lekin aik halki nishani hai. Paisay wali baat ho to official source se confirm kar ke hi aage barho.";
+    } else {
+      band = "low"; verdict = "Koi red flag nahi mila";
+      advice = "Is text me aam scam wali nishaniyan nahi milein. Phir bhi yaad rakho: scanner har cheez nahi pakar sakta — paisay ya OTP ki baat aaye to hamesha official channel se verify karo.";
+    }
+    resultBox.className = "result show " + band;
+    document.getElementById("verdictText").textContent = verdict;
+    document.getElementById("verdictType").textContent = r.type ? ("Ho sakta hai ye ho: " + r.type) : "";
+    document.getElementById("scoreNum").textContent = r.score;
+    document.getElementById("adviceText").textContent = advice;
+    var list = document.getElementById("flagList");
+    list.innerHTML = "";
+    if(r.flags.length === 0){
+      var li = document.createElement("li");
+      li.innerHTML = "<b>Koi pattern match nahi hua</b><span>25+ scam patterns check kiye gaye — koi nahi mila.</span>";
+      list.appendChild(li);
+    } else {
+      r.flags.forEach(function(f){
+        var li = document.createElement("li");
+        var b = document.createElement("b"); b.textContent = f.title;
+        var s = document.createElement("span"); s.textContent = f.why;
+        li.appendChild(b); li.appendChild(s);
+        list.appendChild(li);
+      });
+    }
+    document.getElementById("nextStep").innerHTML = band === "high"
+      ? 'Agla step: <a href="#rep-h">apni report tayyar karo</a> aur number/site ko block kar do.'
+      : 'Agla step: shak barqarar ho to <a href="#flags-h">red flags wali list</a> se mila kar dekho.';
+    requestAnimationFrame(function(){
+      document.getElementById("meterFill").style.width = r.score + "%";
+    });
+    resultBox.scrollIntoView({behavior:"smooth", block:"nearest"});
+  });
+
+  /* ============ FILTERS ============ */
+  var filterBtns = document.querySelectorAll(".filter");
+  filterBtns.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      filterBtns.forEach(function(b){ b.setAttribute("aria-pressed","false"); });
+      btn.setAttribute("aria-pressed","true");
+      var f = btn.getAttribute("data-filter");
+      document.querySelectorAll("#scamGrid .card").forEach(function(card){
+        card.classList.toggle("hide", f !== "all" && card.getAttribute("data-cat") !== f);
+      });
+    });
+  });
+
+  /* ============ REPORT BUILDER ============ */
+  var reportText = "";
+  document.getElementById("genBtn").addEventListener("click", function(){
+    var type = document.getElementById("rType").value;
+    var target = document.getElementById("rTarget").value.trim() || "(nahi bataya gaya)";
+    var amount = document.getElementById("rAmount").value.trim();
+    var what = document.getElementById("rWhat").value.trim() || "(tafseel nahi likhi gayi)";
+    var date = document.getElementById("rDate").value.trim() || "(tareekh nahi likhi gayi)";
+    var amountLine = (amount && amount !== "0") ? ("Rs " + amount) : "Koi mali nuqsan nahi hua (abhi tak)";
+    reportText =
+"SCAM REPORT — FIA CYBERCRIME KE LIYE\n" +
+"==================================\n\n" +
+"Scam ki type: " + type + "\n" +
+"Scammer ka number / website / page: " + target + "\n" +
+"Tareekh: " + date + "\n" +
+"Mali nuqsan: " + amountLine + "\n\n" +
+"Kya hua tha:\n" + what + "\n\n" +
+"Meri guzarish hai ke is number/website ki tehqeeq ki jaye aur " +
+"doosre logon ko is jaal se bachane ke liye karwai ki jaye. " +
+"Mere paas chats ke screenshots aur payment saboot mojood hain jo talab karne par faraham kar dunga/gi.\n\n" +
+"— Scam Alert tool se tayyar shuda report";
+    document.getElementById("reportOut").textContent = reportText;
+  });
+
+  document.getElementById("copyBtn").addEventListener("click", function(){
+    var text = reportText || document.getElementById("reportOut").textContent;
+    function done(){
+      var m = document.getElementById("copiedMsg");
+      m.style.display = "inline";
+      setTimeout(function(){ m.style.display = "none"; }, 2500);
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(); });
+    } else { fallback(); }
+    function fallback(){
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch(e){}
+      document.body.removeChild(ta); done();
+    }
+  });
+
+  document.getElementById("dlBtn").addEventListener("click", function(){
+    var text = reportText || document.getElementById("reportOut").textContent;
+    var blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "scam-report.txt";
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 2000);
+  });
+})();
+</script>
+</body>
+</html>
